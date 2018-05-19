@@ -115,13 +115,15 @@ let g:NERDSpaceDelims=1
 "自动在注释后添加空格
 
 autocmd vimenter * NERDTree
+nmap <F9> :NERDTree<CR>
+"<F9>显示文件树
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 "设置nerdtree自动启动
 
-" 关闭NERDTree快捷键
-let NERDTreeShowLineNumbers=0
+" 打开NERDTree快捷键
+let NERDTreeShowLineNumbers=1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 "剩一个窗口时自动关闭
 let NERDTreeAutoCenter=1
