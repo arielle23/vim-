@@ -8,20 +8,60 @@ Plugin 'prabirshrestha/async.vim'
 Plugin 'prabirshrestha/vim-lsp'
 Plugin 'prabirshrestha/asyncomplete.vim'
 "自动补全
+Plugin 'bling/vim-airline'
+"airline
+Plugin 'tpope/vim-repeat'
+".重复上一个动作
+Plugin 'scrooloose/syntastic'
+"语法检查 <leader>sn下一个 <leader>sp上一个
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'jistr/vim-nerdtree-tabs'
 "共享nerdtree
 Plugin 'kien/ctrlp.vim'
-"文件跳转
+"文件跳转 <c-p>
 Plugin 'rking/ag.vim'
 "搜索文件
 ":Ag 'pattern' 'directory'
 Plugin 'VundleVim/Vundle.vim'
 "插件管理
+"常用命令
+" :PluginList       - 查看已经安装的插件
+" :PluginInstall    - 安装插件
+" :PluginUpdate     - 更新插件
+" :PluginSearch     - 搜索插件，例如 :PluginSearch xml就能搜到xml相关的插件
+" :PluginClean      - 删除插件，把安装插件对应行删除，然后执行这个命令即可
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'tpope/vim-surround'
+"快速给词加环绕符号
+
+" # 替换: cs"'
+" "Hello world!" -> 'Hello world!'
+" # 替换-标签(t=tag): cst"
+" <a>abc</a>  -> "abc"
+" cst<html>
+" <a>abc</a>  -> <html>abc</html>
+" # 删除: ds"
+" "Hello world!" -> Hello world!
+" # 添加(ys=you surround): ysiw"
+" Hello -> "Hello"
+" # 添加: csw"
+" Hello -> "Hello"
+" # 添加-整行: yss"
+" Hello world -> "Hello world"
+" # ySS"
+" Hello world ->
+" "
+    " hello world
+" "
+" # 添加-两个词: veeS"
+" hello world -> "hello world"
+" # 添加-当前到行尾: ys$"
+" # 左符号/右符号 => 带不带空格
+
 Plugin 'tomasr/molokai'
 Plugin 'vim-scripts/phd'
 "颜色主题
-Plugin 'Lokaltog/vim-powerline'
+"Plugin 'Lokaltog/vim-powerline'
 "美化状态栏
 Plugin 'nathanaelkane/vim-indent-guides'
 "缩进
@@ -33,8 +73,10 @@ Plugin 'majutsushi/tagbar'
 Plugin 'terryma/vim-multiple-cursors'
 "多光标 <c-n> <c-p> <c-n>
 Plugin 'scrooloose/nerdcommenter'
-"快速注释
+"快速注释 <leader>cc <leader>cu
 "Plugin 'Valloric/YouCompleteMe'
+Plugin 'taglist.vim'
+
 Plugin 'scrooloose/nerdtree'
 "文件树
 Plugin 'Xuyuanp/nerdtree-git-plugin'
@@ -46,7 +88,9 @@ Plugin 'gcmt/wildfire.vim'
 Plugin 'sjl/gundo.vim'
 "undotree
 Plugin 'Lokaltog/vim-easymotion'
+Plugin 'morhetz/gruvbox'
 "快速跳转 快速搜索
+"<leader><leader>w
 call vundle#end()
 filetype plugin indent on
 
@@ -55,7 +99,7 @@ let mapleader=";"
 "设置语法高亮
 syntax enable
 set background=dark
-colorscheme molokai
+colorscheme  gruvbox
 
 set nu!
 "设置行号显示
@@ -96,7 +140,7 @@ let g:ag_prg="/usr/local/bin/ag --vimgrep"
 set incsearch
 "自身命令行自动补全
 set wildmenu
-"默认大小写不敏感查找
+"默认大/小写不敏感查找
 set ignorecase
 "如果有一个大写字母，则自动切换到大小写敏感
 set smartcase
@@ -104,8 +148,6 @@ set smartcase
 nmap <silent> <Leader>sw :FSHere<cr>
 "接口文件和文件切换
 
-" let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-" let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 "插入状态的光标改为竖线
 
 nmap <F8> :TagbarToggle<CR>
@@ -116,6 +158,15 @@ let g:NERDSpaceDelims=1
 
 autocmd vimenter * NERDTree
 nmap <F9> :NERDTree<CR>
+let g:airline_theme='gruvbox'
+let g:airline_powerline_fonts = 1
+let g:airline_left_sep = '⮀'
+let g:airline_left_alt_sep = '⮁'
+let g:airline_right_sep = '⮂'
+let g:airline_right_alt_sep = '⮃'
+" let g:airline_symbols.branch = '⭠'
+" let g:airline_symbols.readonly = '⭤'
+set guifont=Inconsolata\ for\ Powerline:h17
 "<F9>显示文件树
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
@@ -157,7 +208,7 @@ map <F11> :InstantMarkdownPreview<CR>
 "打开预览快捷键为F11
 
 set lines=80 columns=150
-set guifont=Menlo\ Regular:h15
+" set guifont=Monaco:h16
 "设置默认窗口大小以及字体字号，for macvim
 
 set guioptions=
@@ -202,7 +253,7 @@ nmap <silent> <Leader>i <Plug>IndentGuidesToggle
 "总是显示状态栏
 set laststatus=2
 "状态栏主题风格
-let g:Powerline_colorscheme='solarized256'
+"let g:Powerline_colorscheme=''
 
 " 禁止折行
 set nowrap
@@ -239,3 +290,64 @@ inoremap ( ()<ESC>ha
 inoremap " ""<ESC>ha
 inoremap [ []<ESC>ha
 inoremap ' ''<ESC>ha
+
+function! RemovePairs()  
+    let l:line = getline(".") 
+    let l:previous_char = l:line[col(".")-1] 
+    if index(["(", "[", "{"], l:previous_char) != -1 
+        let l:original_pos = getpos(".") 
+        execute "normal %" 
+        let l:new_pos = getpos(".")
+        if l:original_pos == l:new_pos      
+            execute "normal! a\<BS>"  
+            return  
+        end   
+        let l:line2 = getline(".")
+        if len(l:line2) == col(".")   
+            execute "normal! v%xa"           
+        else 
+            execute "normal! v%xi"
+        end   
+    else  
+        execute "normal! a\<BS>"
+    end
+endfunction 
+inoremap <BS> <ESC>:call RemovePairs()<CR>a
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_error_symbol='>>'
+let g:syntastic_warning_symbol='>'
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
+let g:syntastic_enable_highlighting=1
+let g:syntastic_python_checkers=['pyflakes'] " 使用pyflakes,速度比pylint快
+let g:syntastic_javascript_checkers = ['jsl', 'jshint']
+let g:syntastic_html_checkers=['tidy', 'jshint']
+" 修改高亮的背景色, 适应主题
+highlight SyntasticErrorSign guifg=white guibg=black
+
+" to see error location list
+let g:syntastic_always_populate_loc_list = 1 
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_loc_list_height = 5
+function! ToggleErrors()
+    let old_last_winnr = winnr('$')
+    lclose
+    if old_last_winnr == winnr('$')
+        " Nothing was closed, open syntastic error location panel
+        Errors
+    endif
+endfunction
+nnoremap <Leader>s :call ToggleErrors()<cr>
+nnoremap <Leader>sn :lnext<cr>
+nnoremap <Leader>sp :lprevious<cr>
+
+let Tlist_Show_One_File=1    "只显示当前文件的tags
+let Tlist_WinWidth=40        "设置taglist宽度
+let Tlist_Exit_OnlyWindow=1  "tagList窗口是最后一个窗口，则退出Vim
+let Tlist_Use_Right_Window=1 "在Vim窗口右侧显示taglist窗口
+
+if has("autocmd")
+    au BufReadPost *.scm set filetype=scheme
+  endif
