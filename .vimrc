@@ -280,7 +280,7 @@ let g:asyncomplete_remove_duplicates = 1
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 "auto close preview window when completion is done
 
-inoremap { {<CR>}<ESC>kA<CR>
+inoremap { {}<ESC>i
 "输入{自动补全，并格式化
 
 inoremap <s-cr> <ESC>la
