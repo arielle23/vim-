@@ -4,6 +4,8 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 " vundle 管理的插件列表必须位于 vundle#begin() 和 vundle#end() 之间
 call vundle#begin()
+Plugin 'Shougo/vimproc.vim'
+Plugin 'shougo/vimshell.vim'
 Plugin 'prabirshrestha/async.vim'
 Plugin 'prabirshrestha/vim-lsp'
 Plugin 'prabirshrestha/asyncomplete.vim'
@@ -426,3 +428,12 @@ endfunction
 inoremap <Tab> <C-R>=CleverTab()<CR>
 "设置ruby缩进为2
 autocmd FileType ruby setlocal et sta sw=2 sts=2
+
+"设置vimshell
+let g:vimshell_prompt_expr =
+		\ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
+let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
+
+"设置F7为打开vimshell
+map <F7> :VimShellPop<CR>
+map <F6> :VimShellClose<CR>
