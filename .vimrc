@@ -436,3 +436,4 @@ let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
 
 "设置F7为打开vimshell
 map <F7> :VimShellPop<CR>
+map :W :w
